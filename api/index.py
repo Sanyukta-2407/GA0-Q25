@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -137,6 +137,20 @@ def build_metrics(body: RequestBody) -> list[dict[str, Any]]:
 @app.post("/")
 def aggregate_metrics(body: RequestBody):
     return build_metrics(body)
+
+
+@app.options("/{path:path}")
+def options_handler(path: str):
+    response = Response()
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+
+@app.get("/cors-test")
+def cors_test():
+    return {"status": "ok"}
 
 
 @app.get("/debug")
