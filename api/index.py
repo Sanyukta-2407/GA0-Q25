@@ -22,6 +22,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Expose-Headers": "Access-Control-Allow-Origin",
+}
+
+
+@app.middleware("http")
+async def add_cors_headers(request, call_next):
+    response = await call_next(request)
+    response.headers.update(CORS_HEADERS)
+    return response
+
 
 class RequestBody(BaseModel):
     regions: list[str]
@@ -142,9 +156,7 @@ def aggregate_metrics(body: RequestBody):
 @app.options("/{path:path}")
 def options_handler(path: str):
     response = Response()
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers.update(CORS_HEADERS)
     return response
 
 
