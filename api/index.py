@@ -145,7 +145,7 @@ def build_metrics(body: RequestBody) -> list[dict[str, Any]]:
             }
         )
 
-    return results
+    return {"regions": results}
 
 
 @app.post("/")
